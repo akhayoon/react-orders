@@ -28,6 +28,8 @@
         },
         handleOrderRemove: function( Order ) {
           
+
+          //TODO should find a better way to get the index
           var index = -1; 
           var clength = this.state.Orderlist.length;
           for( var i = 0; i < clength; i++ ) {
@@ -36,17 +38,19 @@
               break;
             }
           }
-          this.state.Orderlist.splice( index, 1 );  
-          this.setState( {Orderlist: this.state.Orderlist} );
+          // this.state.Orderlist.splice( index, 1 );  
+          // this.setState( {Orderlist: this.state.Orderlist} );
+
+          // filtering out the index using list comprehensions 
+          this.setState({
+            Orderlist: this.state.Orderlist.filter((_, i) => i !== index)
+          });
         },
         render: function() {
-          var tableStyle = {width: '100%'};
-          var leftTdStyle = {width: '50%',padding:'20px',verticalAlign: 'top'};
-          var rightTdStyle = {width: '50%',padding:'20px',verticalAlign: 'top'};
           return ( 
             <div>
-                  <OrderList clist={this.state.Orderlist}  onOrderRemove={this.handleOrderRemove}/>
-                 <NewRow onRowSubmit={this.handleNewRowSubmit}/>
+              <OrderList clist={this.state.Orderlist}  onOrderRemove={this.handleOrderRemove}/>
+              <NewRow onRowSubmit={this.handleNewRowSubmit}/>
             </div>
           );
         }
@@ -58,7 +62,7 @@
         },
         render: function() {
           var orders = [];
-          var that = this; // TODO: Needs to find out why that = this made it work; Was getting error that onOrderDelete is not undefined
+          var that = this;
           this.props.clist.forEach(function(order) {
             orders.push(<Order order={order} onOrderDelete={that.handleOrderRemove} /> );
           });
@@ -93,7 +97,7 @@
       
       var NewRow = React.createClass({
         handleSubmit: function(e) {
-          e.preventDefault();
+          e.preventDefault(); //stops page from refreshing
           var cname = 'Product #'
           var ecount = 0
           var hoffice = 0
@@ -112,5 +116,4 @@
     </script>
   </body>
   </html>
-
 

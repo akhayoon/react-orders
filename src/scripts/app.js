@@ -17,7 +17,7 @@ var OrdersApp = React.createClass({
     var index = -1; 
     var clength = this.state.Orderlist.length;
     for( var i = 0; i < clength; i++ ) {
-      if( this.state.Orderlist[i].cname === Order.cname ) {
+      if( this.state.Orderlist[i].product === Order.product ) {
         index = i;
         break;
       }
@@ -89,8 +89,10 @@ var Order = React.createClass({
     return {
       html: 'default text',
       placeholder: false,
+      newQuantity: this.props.order.quantity
+      //newPrice:    this.props.order.price
       // editing: false
-    }
+    };
   },
 
   onChange: function(textContent, setPlaceholder) {
@@ -107,21 +109,44 @@ var Order = React.createClass({
     }
   },
 
+  handleChange: function(event) {
+    this.setState({ newQuantity: event.target.value });
+  },
+
   render: function() {
+    var showSelect = false;
+    if (this.props.order.product.localeCompare('') === 0 ) {
+      showSelect = true;
+    }
+    
     var options = [
-        { value: 'one', label: 'One' },
-        { value: 'two', label: 'Two' }
+      { value: 'one', label: 'One' },
+      { value: 'two', label: 'Two' }
     ];
 
     function logChange(val) {
-        console.log("Selected: " + val);
+      console.log("Selected: " + val);
     }
 
+    var total = this.state.newQuantity * parseFloat(this.props.order.price.slice(1));
+
+    var numberStyle = {width: '15%', paddingLeft: '5%'};
     return (
       <tr>
-        <td>{this.props.order.cname}</td>
-        <td>{this.props.order.ecount}</td>
-        <td>{this.props.order.hoffice}</td>
+        <td>
+          {(showSelect
+            ? <Select
+                name="form-field-name"
+                value="one"
+                options={options}
+                onChange={logChange}
+              />
+            : <div>{this.props.order.product}</div>
+          )}
+        </td>
+        <td><input type="number" value={this.state.newQuantity} onChange={this.handleChange} style={numberStyle} /></td>
+        <td>{this.props.order.price}</td>
+        <td>{total}</td>
         <td><input type="button"  className="btn btn-primary" value="Remove" onClick={this.handleRemoveOrder}/></td>
         <td>
           <div className="edit">
@@ -137,14 +162,6 @@ var Order = React.createClass({
             />
           </div>
         </td>
-        <td>
-          <Select
-              name="form-field-name"
-              value="one"
-              options={options}
-              onChange={logChange}
-          />
-        </td>
       </tr>
       );
   }
@@ -153,10 +170,10 @@ var Order = React.createClass({
 var NewRow = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault(); //stops page from refreshing
-    var cname = 'Product #'
-    var ecount = 0
-    var hoffice = 0
-    var newrow = {cname: cname, ecount: ecount, hoffice: hoffice };
+    var product = ''
+    var quantity = 0
+    var price = 0
+    var newrow = {product: product, quantity: quantity, price: price };
     this.props.onRowSubmit( newrow );
   },
   render: function() {
@@ -166,5 +183,5 @@ var NewRow = React.createClass({
     );
   }
 });
-var defOrders = [{cname:"Product #1",ecount:3,hoffice:"$3.99"},{cname:"Product #2",ecount:6,hoffice:"$49.99"}];
+var defOrders = [{product:"Product #1",quantity:3,price:"$3.99"},{product:"Product #2",quantity:6,price:"$49.99"}];
  ReactDOM.render( <OrdersApp orders={defOrders}/>, document.getElementById( "OrdersApp" ) );

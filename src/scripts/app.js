@@ -126,10 +126,7 @@ var Order = React.createClass({
   getInitialState: function(){
     return {
       html: 'default text',
-      priceHtml: '0',
       placeholder: false,
-      newQuantity: this.props.order.quantity,
-      newPrice:    this.props.order.price
       // editing: false
     };
   },
@@ -146,10 +143,16 @@ var Order = React.createClass({
         html: textContent
       })
     }
+    this.props.order.price = textContent;
   },
 
   handleChange: function(event) {
     this.setState({ newQuantity: event.target.value });
+    this.props.order.quantity = event.target.value;
+  },
+
+  handleChange2: function(event) {
+    this.setState({ newPrice: event.target.value });
   },
 
   render: function() {
@@ -167,7 +170,7 @@ var Order = React.createClass({
       console.log("Selected: " + val);
     }
 
-    var total = this.state.newQuantity * (parseFloat(this.state.newPrice));
+    var total = this.props.order.quantity * (parseFloat(this.props.order.price));
 
     var numberStyle = {width: '50%', paddingLeft: '15%'};
     return (
@@ -184,8 +187,22 @@ var Order = React.createClass({
           )}
         </td>
         <td><EditContent editing={this.props.editing} html="default"/></td>
-        <td><input type="number" value={this.state.newQuantity} onChange={this.handleChange} style={numberStyle} /></td>
-        <td>$<EditContent editing={this.props.editing} html={this.state.newPrice}/></td>
+        <td><input type="number" value={this.props.order.quantity} onChange={this.handleChange} style={numberStyle} /></td>
+        <td>
+          {/* ContentEditable needs to be inside this component 
+              since we rely on its value to update the total through
+              this.props.order.price */} 
+          <div className="edit">$
+            <ContentEditable
+              tagName='div'
+              onChange={this.onChange}
+              html={this.props.order.price}
+              preventStyling
+              noLinebreaks
+              editing={this.props.editing}
+            />
+          </div>
+        </td>
         <td>${total.toFixed(2)}</td>
         <td><input type="button"  className="btn btn-primary" value="Remove" onClick={this.handleRemoveOrder}/></td>
       </tr>

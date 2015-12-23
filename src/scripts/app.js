@@ -65,16 +65,18 @@ var OrderList = React.createClass({
     });
     var quantityStyle = {width: '10%'};
     var noteStyle     = {width: '20%'};
+    var editButton    = {marginBottom: '14px'};
     return ( 
       <div>
-        <h3>Order List</h3>
+        <div>
+          <button className="btn btn-primary" onClick={this.enableEditing} style={editButton}>
+            {(this.state.editing ? <div>Disable Editing</div> : <div>Enable Editing</div>)} 
+          </button>
+        </div>
         <table className="table table-striped">
           <thead><tr><th>Product</th><th style={noteStyle}></th><th style={quantityStyle}>Quantity</th><th>Price</th><th>Total</th></tr></thead>
           <tbody>{orders}</tbody>
         </table>
-        <button onClick={this.enableEditing}>
-          {(this.state.editing ? <div>Disable Editing</div> : <div>Enable Editing</div>)} 
-        </button>
       </div>
       );
   }
@@ -169,6 +171,7 @@ var Order = React.createClass({
       { value: 'product2', label: 'Product #3' }
     ];
 
+    var pullLeft = {float: 'left'}
 
     var total = this.props.order.quantity * (parseFloat(this.props.order.price));
 
@@ -191,8 +194,8 @@ var Order = React.createClass({
         <td>
           {/* ContentEditable needs to be inside this component 
               since we rely on its value to update the total through
-              this.props.order.price */} 
-          <div className="edit">$
+              this.props.order.price */}
+          <div className="edit">
             <ContentEditable
               tagName='div'
               onChange={this.onChange}
@@ -213,7 +216,7 @@ var Order = React.createClass({
 var NewRow = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault(); //stops page from refreshing
-    var product = ''
+    var product = 'Select a Product'
     var quantity = 0
     var price = '0.00'
     var newrow = {product: product, quantity: quantity, price: price };
@@ -222,7 +225,9 @@ var NewRow = React.createClass({
   render: function() {
     var inputStyle = {padding:'12px'}
     return ( 
-          <a className="btn btn-primary" href="" onClick={this.handleSubmit}></a>
+          <a className="btn btn-primary" href="" onClick={this.handleSubmit}>
+          <img src="https://starsskincare.com/wp-content/uploads/2015/04/Plus_Sign.png" width="25px" height="25px" />
+          </a>
     );
   }
 });

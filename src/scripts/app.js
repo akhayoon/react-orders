@@ -62,11 +62,13 @@ var OrderList = React.createClass({
     this.props.clist.forEach(function(order) {
       orders.push(<Order order={order} onOrderDelete={that.handleOrderRemove} editing={that.state.editing} /> );
     });
+    var quantityStyle = {width: '10%'};
+    var noteStyle     = {width: '20%'};
     return ( 
       <div>
         <h3>Order List</h3>
         <table className="table table-striped">
-          <thead><tr><th>Product</th><th>Quantity</th><th>Price</th><th>Total</th></tr></thead>
+          <thead><tr><th>Product</th><th style={noteStyle}></th><th style={quantityStyle}>Quantity</th><th>Price</th><th>Total</th></tr></thead>
           <tbody>{orders}</tbody>
         </table>
         <button onClick={this.enableEditing}>
@@ -165,9 +167,9 @@ var Order = React.createClass({
       console.log("Selected: " + val);
     }
 
-    var total = this.state.newQuantity * parseFloat(this.state.newPrice);
+    var total = this.state.newQuantity * (parseFloat(this.state.newPrice));
 
-    var numberStyle = {width: '15%', paddingLeft: '5%'};
+    var numberStyle = {width: '50%', paddingLeft: '15%'};
     return (
       <tr>
         <td>
@@ -181,11 +183,11 @@ var Order = React.createClass({
             : <div>{this.props.order.product}</div>
           )}
         </td>
+        <td><EditContent editing={this.props.editing} html="default"/></td>
         <td><input type="number" value={this.state.newQuantity} onChange={this.handleChange} style={numberStyle} /></td>
         <td>$<EditContent editing={this.props.editing} html={this.state.newPrice}/></td>
-        <td>${total}</td>
+        <td>${total.toFixed(2)}</td>
         <td><input type="button"  className="btn btn-primary" value="Remove" onClick={this.handleRemoveOrder}/></td>
-        <td><EditContent editing={this.props.editing} html="default"/></td>
       </tr>
       );
   }

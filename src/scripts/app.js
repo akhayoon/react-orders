@@ -77,6 +77,42 @@ var OrderList = React.createClass({
   }
 });
 
+var EditContent = React.createClass({
+  // getInitialState: function(){
+  //   return {
+  //     html: 'default text'
+  //   };
+  // },
+
+  onChange: function(textContent, setPlaceholder) {
+    if (setPlaceholder) {
+      this.setState({
+        placeholder: true,
+        html: ''
+      })
+    } else {
+      this.setState({
+        placeholder: false,
+        html: textContent
+      })
+    }
+  },
+  render: function() {
+    return(
+      <div className="edit">
+        <ContentEditable
+          tagName='div'
+          onChange={this.onChange}
+          html={this.props.html}
+          preventStyling
+          noLinebreaks
+          editing={this.props.editing}
+        />
+      </div>
+    );
+  } 
+});
+
 var Order = React.createClass({
 
   handleRemoveOrder: function() {
@@ -88,9 +124,10 @@ var Order = React.createClass({
   getInitialState: function(){
     return {
       html: 'default text',
+      priceHtml: '0',
       placeholder: false,
-      newQuantity: this.props.order.quantity
-      //newPrice:    this.props.order.price
+      newQuantity: this.props.order.quantity,
+      newPrice:    this.props.order.price
       // editing: false
     };
   },
@@ -128,7 +165,7 @@ var Order = React.createClass({
       console.log("Selected: " + val);
     }
 
-    var total = this.state.newQuantity * parseFloat(this.props.order.price.slice(1));
+    var total = this.state.newQuantity * parseFloat(this.state.newPrice);
 
     var numberStyle = {width: '15%', paddingLeft: '5%'};
     return (
@@ -145,23 +182,10 @@ var Order = React.createClass({
           )}
         </td>
         <td><input type="number" value={this.state.newQuantity} onChange={this.handleChange} style={numberStyle} /></td>
-        <td>{this.props.order.price}</td>
-        <td>{total}</td>
+        <td>$<EditContent editing={this.props.editing} html={this.state.newPrice}/></td>
+        <td>${total}</td>
         <td><input type="button"  className="btn btn-primary" value="Remove" onClick={this.handleRemoveOrder}/></td>
-        <td>
-          <div className="edit">
-            <ContentEditable
-              tagName='div'
-              onChange={this.onChange}
-              html={this.state.html}
-              preventStyling
-              noLinebreaks
-              placeholder={this.state.placeholder}
-              placeholderText='Your Name'
-              editing={this.props.editing}
-            />
-          </div>
-        </td>
+        <td><EditContent editing={this.props.editing} html="default"/></td>
       </tr>
       );
   }
@@ -183,5 +207,5 @@ var NewRow = React.createClass({
     );
   }
 });
-var defOrders = [{product:"Product #1",quantity:3,price:"$3.99"},{product:"Product #2",quantity:6,price:"$49.99"}];
+var defOrders = [{product:"Product #1",quantity:3,price:"3.99"},{product:"Product #2",quantity:6,price:"49.99"}];
  ReactDOM.render( <OrdersApp orders={defOrders}/>, document.getElementById( "OrdersApp" ) );

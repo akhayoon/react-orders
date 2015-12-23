@@ -1,7 +1,8 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var InlineEdit = require('react-inline-edit');
 var ContentEditable = require('react-wysiwyg');
+var Select = require('react-select');
+
 
 var OrdersApp = React.createClass({
   getInitialState: function() {
@@ -107,6 +108,15 @@ var Order = React.createClass({
   },
 
   render: function() {
+    var options = [
+        { value: 'one', label: 'One' },
+        { value: 'two', label: 'Two' }
+    ];
+
+    function logChange(val) {
+        console.log("Selected: " + val);
+    }
+
     return (
       <tr>
         <td>{this.props.order.cname}</td>
@@ -126,6 +136,14 @@ var Order = React.createClass({
               editing={this.props.editing}
             />
           </div>
+        </td>
+        <td>
+          <Select
+              name="form-field-name"
+              value="one"
+              options={options}
+              onChange={logChange}
+          />
         </td>
       </tr>
       );

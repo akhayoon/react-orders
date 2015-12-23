@@ -53,7 +53,8 @@ var OrderList = React.createClass({
 
   enableEditing: function(){
     // set your contenteditable field into editing mode.
-    this.setState({ editing: true });
+    var editingBool = (this.state.editing ? false : true);
+    this.setState({ editing: editingBool });
   },
 
   render: function() {
@@ -72,7 +73,7 @@ var OrderList = React.createClass({
           <tbody>{orders}</tbody>
         </table>
         <button onClick={this.enableEditing}>
-          Enable Editing
+          {(this.state.editing ? <div>Disable Editing</div> : <div>Enable Editing</div>)} 
         </button>
       </div>
       );
@@ -151,9 +152,11 @@ var Order = React.createClass({
     this.props.order.quantity = event.target.value;
   },
 
-  handleChange2: function(event) {
-    this.setState({ newPrice: event.target.value });
+  logChange: function(val) {
+    console.log("Selected: " + val);
+    this.props.order.product = val;
   },
+
 
   render: function() {
     var showSelect = false;
@@ -162,13 +165,10 @@ var Order = React.createClass({
     }
     
     var options = [
-      { value: 'one', label: 'One' },
-      { value: 'two', label: 'Two' }
+      { value: 'product1', label: 'Product #1' },
+      { value: 'product2', label: 'Product #3' }
     ];
 
-    function logChange(val) {
-      console.log("Selected: " + val);
-    }
 
     var total = this.props.order.quantity * (parseFloat(this.props.order.price));
 
@@ -176,17 +176,17 @@ var Order = React.createClass({
     return (
       <tr>
         <td>
-          {(showSelect
+          {(this.props.editing
             ? <Select
                 name="form-field-name"
-                value="one"
+                value={this.props.order.product}
                 options={options}
-                onChange={logChange}
+                onChange={this.logChange}
               />
             : <div>{this.props.order.product}</div>
           )}
         </td>
-        <td><EditContent editing={this.props.editing} html="default"/></td>
+        <td><EditContent editing={this.props.editing} html="Add Note..." /></td>
         <td><input type="number" value={this.props.order.quantity} onChange={this.handleChange} style={numberStyle} /></td>
         <td>
           {/* ContentEditable needs to be inside this component 
@@ -215,7 +215,7 @@ var NewRow = React.createClass({
     e.preventDefault(); //stops page from refreshing
     var product = ''
     var quantity = 0
-    var price = 0
+    var price = '0.00'
     var newrow = {product: product, quantity: quantity, price: price };
     this.props.onRowSubmit( newrow );
   },

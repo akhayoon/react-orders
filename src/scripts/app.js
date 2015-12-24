@@ -8,8 +8,12 @@ var OrdersApp = React.createClass({
   getInitialState: function() {
     return {Orderlist:this.props.orders};
   },
-  handleNewRowSubmit: function( newOrder ) {
-    this.setState( {Orderlist: this.state.Orderlist.concat([newOrder])} );
+  handleNewRowSubmit: function() {
+    var product = 'Select a Product'
+    var quantity = 0
+    var price = '0.00'
+    var newrow = {product: product, quantity: quantity, price: price };
+    this.setState( {Orderlist: this.state.Orderlist.concat([newrow])} );
   },
   handleOrderRemove: function( Order ) {
     
@@ -30,11 +34,21 @@ var OrdersApp = React.createClass({
       Orderlist: this.state.Orderlist.filter((_, i) => i !== index)
     });
   },
+
+
+  componentDidMount: function() {
+    window.addEventListener('resize', this.handleNewRowSubmit);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.handleNewRowSubmit);
+  },
   render: function() {
     return ( 
       <div>
-        <OrderList clist={this.state.Orderlist}  onOrderRemove={this.handleOrderRemove}/>
-        <NewRow onRowSubmit={this.handleNewRowSubmit}/>
+        <OrderList clist={this.state.Orderlist}  onOrderRemove={this.handleOrderRemove}
+          onRowSubmit={this.handleNewRowSubmit}
+        />
       </div>
     );
   }
@@ -66,11 +80,6 @@ var OrderList = React.createClass({
 });
 
 var EditContent = React.createClass({
-  // getInitialState: function(){
-  //   return {
-  //     html: 'default text'
-  //   };
-  // },
 
   onChange: function(textContent, setPlaceholder) {
     if (setPlaceholder) {

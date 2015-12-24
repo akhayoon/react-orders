@@ -130,6 +130,7 @@ var Order = React.createClass({
     return {
       html: 'default text',
       placeholder: false,
+      showSelect: true,
       // editing: false
     };
   },
@@ -159,12 +160,21 @@ var Order = React.createClass({
     this.props.order.product = val;
   },
 
+  showSelect: false,
+
+  onClick: function() {
+    console.log('hello');
+    this.setState({showSelect: true});
+    console.log(this.state.showSelect);
+  },
+
+  onClick2: function() {
+    console.log('seond');
+    this.setState({showSelect: false});
+    console.log(this.state.showSelect);
+  },
 
   render: function() {
-    var showSelect = false;
-    if (this.props.order.product.localeCompare('') === 0 ) {
-      showSelect = true;
-    }
     
     var options = [
       { value: 'product1', label: 'Product #1' },
@@ -178,16 +188,17 @@ var Order = React.createClass({
     var numberStyle = {width: '50%', paddingLeft: '15%'};
     return (
       <tr>
-        <td>
-          {(this.props.editing
-            ? <Select
-                name="form-field-name"
-                value={this.props.order.product}
-                options={options}
-                onChange={this.logChange}
-              />
-            : <div>{this.props.order.product}</div>
-          )}
+        <td >
+            {this.state.showSelect
+              ? <div onClick={this.onClick2}>{this.props.order.product}</div> 
+              : <Select
+                  name="form-field-name"
+                  value={this.props.order.product}
+                  options={options}
+                  onChange={this.logChange}
+                  onBlur={this.onClick}
+                />
+            }
         </td>
         <td><EditContent editing={this.props.editing} html="Add Note..." /></td>
         <td><input type="number" value={this.props.order.quantity} onChange={this.handleChange} style={numberStyle} /></td>

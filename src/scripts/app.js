@@ -45,34 +45,17 @@ var OrderList = React.createClass({
     this.props.onOrderRemove( order );
   },
 
-  getInitialState: function(){
-    return {
-      editing: false
-    }
-  },
-
-  enableEditing: function(){
-    // set your contenteditable field into editing mode.
-    var editingBool = (this.state.editing ? false : true);
-    this.setState({ editing: editingBool });
-  },
-
   render: function() {
     var orders = [];
     var that = this;
     this.props.clist.forEach(function(order) {
-      orders.push(<Order order={order} onOrderDelete={that.handleOrderRemove} editing={that.state.editing} /> );
+      orders.push(<Order order={order} onOrderDelete={that.handleOrderRemove} /> );
     });
     var quantityStyle = {width: '10%'};
     var noteStyle     = {width: '20%'};
     var editButton    = {marginBottom: '14px'};
     return ( 
       <div>
-        <div>
-          <button className="btn btn-primary" onClick={this.enableEditing} style={editButton}>
-            {(this.state.editing ? <div>Disable Editing</div> : <div>Enable Editing</div>)} 
-          </button>
-        </div>
         <table className="table table-striped">
           <thead><tr><th>Product</th><th style={noteStyle}></th><th style={quantityStyle}>Quantity</th><th>Price</th><th>Total</th></tr></thead>
           <tbody>{orders}</tbody>
@@ -129,9 +112,11 @@ var Order = React.createClass({
   getInitialState: function(){
     return {
       html: 'default text',
-      placeholder: false,
-      showSelect: true,
-      // editing: false
+      placeholder:  false,
+      hideSelect:   true,
+      editNote:     false,
+      editQuantity: false,
+      editPrice:    false
     };
   },
 
@@ -160,18 +145,22 @@ var Order = React.createClass({
     this.props.order.product = val;
   },
 
-  showSelect: false,
 
   onClick: function() {
-    console.log('hello');
-    this.setState({showSelect: true});
-    console.log(this.state.showSelect);
+    console.log('edit product');
+    this.setState({hideSelect: this.state.hideSelect ? false : true});
+    console.log(this.state.hideSelect);
   },
 
+
   onClick2: function() {
-    console.log('seond');
-    this.setState({showSelect: false});
-    console.log(this.state.showSelect);
+    console.log('edit note')
+    this.setState({editNote: this.state.editNote ? false : true});
+  },
+
+  onClick3: function() {
+    console.log('edit Price')
+    this.setState({editPrice: this.state.editPrice ? false : true});
   },
 
   render: function() {
@@ -189,8 +178,8 @@ var Order = React.createClass({
     return (
       <tr>
         <td >
-            {this.state.showSelect
-              ? <div onClick={this.onClick2}>{this.props.order.product}</div> 
+            {this.state.hideSelect
+              ? <div onClick={this.onClick}>{this.props.order.product}</div> 
               : <Select
                   name="form-field-name"
                   value={this.props.order.product}
@@ -200,20 +189,32 @@ var Order = React.createClass({
                 />
             }
         </td>
-        <td><EditContent editing={this.props.editing} html="Add Note..." /></td>
-        <td><input type="number" value={this.props.order.quantity} onChange={this.handleChange} style={numberStyle} /></td>
+        <td onClick={this.onClick2} onBlur={this.onClick2}>
+          <div> 
+          <EditContent 
+            editing={this.state.editNote} 
+            html="Add Note..."
+          />
+          </div>
+        </td>
+        <td><input type="number" 
+              value={this.props.order.quantity} 
+              onChange={this.handleChange} 
+              style={numberStyle} 
+            />
+        </td>
         <td>
           {/* ContentEditable needs to be inside this component 
               since we rely on its value to update the total through
               this.props.order.price */}
-          <div className="edit">
+          <div className="edit" onClick={this.onClick3} onBlur={this.onClick3}>
             <ContentEditable
               tagName='div'
               onChange={this.onChange}
               html={this.props.order.price}
               preventStyling
               noLinebreaks
-              editing={this.props.editing}
+              editing={this.state.editPrice}
             />
           </div>
         </td>

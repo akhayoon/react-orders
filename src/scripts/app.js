@@ -9,10 +9,11 @@ var OrdersApp = React.createClass({
     return {Orderlist:this.props.orders};
   },
   handleNewRowSubmit: function() {
-    var product = 'Select a Product'
+    var product  = 'Click Here to Add New Product...'
     var quantity = 0
-    var price = '0.00'
-    var newrow = {product: product, quantity: quantity, price: price };
+    var price    = '0.00'
+    var isNew    = true
+    var newrow   = {product: product, quantity: quantity, price: price, isNew: isNew };
     this.setState( {Orderlist: this.state.Orderlist.concat([newrow])} );
   },
   handleOrderRemove: function( Order ) {
@@ -37,12 +38,10 @@ var OrdersApp = React.createClass({
 
 
   componentDidMount: function() {
-    window.addEventListener('resize', this.handleNewRowSubmit);
+    console.log('called?');
+    this.handleNewRowSubmit();
   },
 
-  componentWillUnmount: function() {
-    window.removeEventListener('resize', this.handleNewRowSubmit);
-  },
   render: function() {
     return ( 
       <div>
@@ -59,11 +58,15 @@ var OrderList = React.createClass({
     this.props.onOrderRemove( order );
   },
 
+  handleOrderAdd: function(order){
+    this.props.onRowSubmit(order)
+  },
+
   render: function() {
     var orders = [];
     var that = this;
     this.props.clist.forEach(function(order) {
-      orders.push(<Order order={order} onOrderDelete={that.handleOrderRemove} /> );
+      orders.push(<Order order={order} onOrderDelete={that.handleOrderRemove} onOrderAdd={that.handleOrderAdd} /> );
     });
     var quantityStyle = {width: '10%'};
     var noteStyle     = {width: '20%'};
@@ -117,6 +120,11 @@ var Order = React.createClass({
     return false;
   },
 
+  handleAddOrder: function() {
+    console.log('handleAddOrder called');
+    this.props.onOrderAdd(this.props.order);
+    return false;
+  },
 
   getInitialState: function(){
     return {
@@ -152,13 +160,17 @@ var Order = React.createClass({
   logChange: function(val) {
     console.log("Selected: " + val);
     this.props.order.product = val;
+    if (this.props.order.isNew){
+      this.props.order.isNew = false;
+      //we also need to create a new row here
+      this.handleAddOrder();
+    }
   },
 
 
   onClick: function() {
     console.log('edit product');
     this.setState({hideSelect: this.state.hideSelect ? false : true});
-    console.log(this.state.hideSelect);
   },
 
 
@@ -181,7 +193,7 @@ var Order = React.createClass({
 
     var pullLeft = {float: 'left'}
 
-    var total = this.props.order.quantity * (parseFloat(this.props.order.price));
+    var totalPrice = this.props.order.quantity * (parseFloat(this.props.order.price));
 
     var numberStyle = {width: '50%', paddingLeft: '15%'};
     return (
@@ -227,8 +239,9 @@ var Order = React.createClass({
             />
           </div>
         </td>
-        <td>${total.toFixed(2)}</td>
-        <td><input type="button"  className="btn btn-primary" value="Remove" onClick={this.handleRemoveOrder}/></td>
+        <td>${totalPrice.toFixed(2)}</td>
+        <td>{this.props.order.isNew ? <p></p> : <input type="button"  className="btn btn-primary" value="Remove" onClick={this.handleRemoveOrder}/>} </td>
+        {/*<td>{this.props.order.isNew ? <p>true</p> : <p>false</p>}</td> */}
       </tr>
       );
   }
@@ -252,5 +265,5 @@ var NewRow = React.createClass({
     );
   }
 });
-var defOrders = [{product:"Product #1",quantity:3,price:"3.99"},{product:"Product #2",quantity:6,price:"49.99"}];
+var defOrders = [{product:"Product #1",quantity:3,price:"3.99", isNew: false},{product:"Product #2",quantity:6,price:"49.99", isNew: false}];
  ReactDOM.render( <OrdersApp orders={defOrders}/>, document.getElementById( "OrdersApp" ) );
